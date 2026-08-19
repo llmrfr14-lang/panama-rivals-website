@@ -53,11 +53,11 @@ export function RecentResults() {
             <div className="hidden w-24 shrink-0 items-center justify-end gap-1.5 text-xs md:flex">
               {match.status === 'verified' ? (
                 <span className="flex items-center gap-1 text-primary">
-                  <CircleCheck className="size-3.5" /> Verified
+                  <CircleCheck className="size-3.5" /> Verificado
                 </span>
               ) : (
                 <span className="flex items-center gap-1 text-accent">
-                  <Clock className="size-3.5" /> Pending
+                  <Clock className="size-3.5" /> Pendiente
                 </span>
               )}
             </div>

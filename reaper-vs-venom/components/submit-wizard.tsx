@@ -22,9 +22,9 @@ type UploadedReplay = { id: string; name: string; size: number }
 type ProofMethod = 'image' | 'replay' | null
 
 const steps = [
-  { id: 1, label: 'Match', hint: 'Teams & score' },
-  { id: 2, label: 'Proof', hint: 'Image or replay' },
-  { id: 3, label: 'Review', hint: 'Confirm & send' },
+  { id: 1, label: 'Partido', hint: 'Equipos y marcador' },
+  { id: 2, label: 'Prueba', hint: 'Imagen o repetición' },
+  { id: 3, label: 'Revisar', hint: 'Confirmar y enviar' },
 ]
 
 function formatSize(bytes: number) {
@@ -142,17 +142,17 @@ export function SubmitWizard() {
         <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-primary/15 text-primary">
           <CircleCheck className="size-9" />
         </div>
-        <h2 className="font-display text-2xl font-bold">Result submitted</h2>
+        <h2 className="font-display text-2xl font-bold">Resultado enviado</h2>
         <p className="mx-auto mt-2 max-w-sm text-pretty text-muted-foreground">
-          Your report for {teamName(homeTeam)} vs {teamName(awayTeam)} is now pending admin
-          verification. You&apos;ll be notified once it&apos;s confirmed.
+          Tu reporte de {teamName(homeTeam)} contra {teamName(awayTeam)} ahora está pendiente
+          de verificación por los administradores. Te notificaremos cuando se confirme.
         </p>
         <div className="mt-6 flex items-center justify-center gap-3">
           <Button size="lg" nativeButton={false} render={<Link href="/standings" />}>
-            View Standings
+            Ver clasificación
           </Button>
           <Button size="lg" variant="outline" onClick={resetForm}>
-            Submit Another
+            Enviar otro
           </Button>
         </div>
       </div>
@@ -209,33 +209,33 @@ export function SubmitWizard() {
         {step === 1 && (
           <div className="flex flex-col gap-6">
             <StepHeading
-              title="Which match are you reporting?"
-              desc="Enter both team names, the series format, and the final score."
+              title="¿Qué partido estás reportando?"
+              desc="Ingresa ambos nombres de equipo, el formato de la serie y el marcador final."
             />
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Home team">
-                <TeamInput value={homeTeam} onChange={setHomeTeam} placeholder="Home team name" />
+              <Field label="Equipo local">
+                <TeamInput value={homeTeam} onChange={setHomeTeam} placeholder="Nombre del equipo local" />
               </Field>
-              <Field label="Away team">
-                <TeamInput value={awayTeam} onChange={setAwayTeam} placeholder="Away team name" />
+              <Field label="Equipo visitante">
+                <TeamInput value={awayTeam} onChange={setAwayTeam} placeholder="Nombre del equipo visitante" />
               </Field>
             </div>
             {teamsMatch && (
-              <p className="text-sm text-destructive">Home and away teams must be different.</p>
+              <p className="text-sm text-destructive">El equipo local y el visitante deben ser diferentes.</p>
             )}
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Series format">
+              <Field label="Formato de serie">
                 <select
                   value={bestOf}
                   onChange={(e) => setBestOf(e.target.value)}
                   className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40"
                 >
-                  <option value="3">Best of 3</option>
-                  <option value="5">Best of 5</option>
-                  <option value="7">Best of 7</option>
+                  <option value="3">Mejor de 3</option>
+                  <option value="5">Mejor de 5</option>
+                  <option value="7">Mejor de 7</option>
                 </select>
               </Field>
-              <Field label="Match date">
+              <Field label="Fecha del partido">
                 <input
                   type="date"
                   value={matchDate}
@@ -246,7 +246,7 @@ export function SubmitWizard() {
             </div>
 
             <div className="rounded-xl border border-border bg-background p-5">
-              <p className="mb-4 text-sm font-medium text-muted-foreground">Final score</p>
+              <p className="mb-4 text-sm font-medium text-muted-foreground">Marcador final</p>
               <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
                 <ScoreInput label={teamName(homeTeam)} value={homeScore} onChange={setHomeScore} />
                 <span className="pt-6 font-display text-2xl font-bold text-muted-foreground">–</span>
@@ -260,23 +260,23 @@ export function SubmitWizard() {
         {step === 2 && (
           <div className="flex flex-col gap-6">
             <StepHeading
-              title="How do you want to prove the result?"
-              desc="Choose one method. Console players can upload a screenshot; PC players can upload a replay. Either one is enough."
+              title="¿Cómo quieres probar el resultado?"
+              desc="Elige un método. Los jugadores de consola pueden subir una captura; los de PC, una repetición. Cualquiera es suficiente."
             />
 
             <div className="grid gap-3 sm:grid-cols-2">
               <MethodCard
                 active={proofMethod === 'image'}
                 icon={Gamepad2}
-                title="Endgame screenshot"
-                desc="Best for console players — a clear photo of the scoreboard."
+                title="Captura de pantalla final"
+                desc="Ideal para consola: una foto clara del marcador."
                 onClick={() => chooseMethod('image')}
               />
               <MethodCard
                 active={proofMethod === 'replay'}
                 icon={Monitor}
-                title="Replay file"
-                desc="For PC players — upload the .replay file from your game."
+                title="Archivo de repetición"
+                desc="Para PC: sube el archivo .replay de tu juego."
                 onClick={() => chooseMethod('replay')}
               />
             </div>
@@ -307,8 +307,8 @@ export function SubmitWizard() {
                     <Upload className="size-6" />
                   </span>
                   <div>
-                    <p className="font-medium">Drag &amp; drop screenshots here</p>
-                    <p className="text-sm text-muted-foreground">or click to browse — PNG or JPG</p>
+                    <p className="font-medium">Arrastra y suelta las capturas aquí</p>
+                    <p className="text-sm text-muted-foreground">o haz clic para explorar: PNG o JPG</p>
                   </div>
                   <input
                     ref={imageInputRef}
@@ -340,7 +340,7 @@ export function SubmitWizard() {
                             removeImage(img.id)
                           }}
                           className="absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-full bg-background/80 text-foreground opacity-0 backdrop-blur transition-opacity group-hover:opacity-100"
-                          aria-label={`Remove ${img.name}`}
+                          aria-label={`Eliminar ${img.name}`}
                         >
                           <X className="size-3.5" />
                         </button>
@@ -369,8 +369,8 @@ export function SubmitWizard() {
                     <FileVideo className="size-6" />
                   </span>
                   <div>
-                    <p className="font-medium">Add .replay files</p>
-                    <p className="text-sm text-muted-foreground">click to browse your files</p>
+                    <p className="font-medium">Agregar archivos .replay</p>
+                    <p className="text-sm text-muted-foreground">haz clic para explorar tus archivos</p>
                   </div>
                   <input
                     ref={replayInputRef}
@@ -399,7 +399,7 @@ export function SubmitWizard() {
                             type="button"
                             onClick={() => setReplays((prev) => prev.filter((x) => x.id !== r.id))}
                             className="text-muted-foreground transition-colors hover:text-foreground"
-                            aria-label={`Remove ${r.name}`}
+                            aria-label={`Eliminar ${r.name}`}
                           >
                             <X className="size-4" />
                           </button>
@@ -417,8 +417,8 @@ export function SubmitWizard() {
         {step === 3 && (
           <div className="flex flex-col gap-6">
             <StepHeading
-              title="Review your submission"
-              desc="Double-check everything looks right before sending it to the admins."
+              title="Revisa tu reporte"
+              desc="Asegúrate de que todo esté correcto antes de enviarlo a los administradores."
             />
             <div className="grid gap-3 rounded-xl border border-border bg-background p-5">
               <div className="flex items-center justify-center gap-4 pb-3">
@@ -429,14 +429,14 @@ export function SubmitWizard() {
                 </span>
                 <span className="font-display text-lg font-bold">{teamName(awayTeam)}</span>
               </div>
-              <ReviewRow label="Series" value={`Best of ${bestOf}`} />
-              <ReviewRow label="Date" value={matchDate || 'Not set'} />
+              <ReviewRow label="Serie" value={`Mejor de ${bestOf}`} />
+              <ReviewRow label="Fecha" value={matchDate || 'Sin fecha'} />
               <ReviewRow
-                label="Proof"
+                label="Prueba"
                 value={
                   proofMethod === 'image'
-                    ? `${images.length} screenshot${images.length === 1 ? '' : 's'}`
-                    : `${replays.length} replay file${replays.length === 1 ? '' : 's'}`
+                    ? `${images.length} captura${images.length === 1 ? '' : 's'}`
+                    : `${replays.length} archivo${replays.length === 1 ? '' : 's'} de repetición`
                 }
               />
             </div>
@@ -477,16 +477,16 @@ export function SubmitWizard() {
             onClick={() => setStep((s) => Math.max(1, s - 1))}
             disabled={step === 1}
           >
-            <ChevronLeft className="size-4" /> Back
+            <ChevronLeft className="size-4" /> Atrás
           </Button>
 
           {step < 3 ? (
             <Button size="lg" onClick={() => setStep((s) => s + 1)} disabled={!canContinue[step]}>
-              Continue <ChevronRight className="size-4" />
+              Continuar <ChevronRight className="size-4" />
             </Button>
           ) : (
             <Button size="lg" onClick={() => setSubmitted(true)}>
-              <Trophy className="size-4" /> Submit Result
+              <Trophy className="size-4" /> Enviar resultado
             </Button>
           )}
         </div>
@@ -534,7 +534,7 @@ function MethodCard({
       </div>
       {active && (
         <span className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-primary">
-          <Check className="size-3.5" /> Selected
+          <Check className="size-3.5" /> Seleccionado
         </span>
       )}
     </button>

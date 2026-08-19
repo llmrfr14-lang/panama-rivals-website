@@ -20,20 +20,20 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 sm:flex" aria-label="Main">
+        <nav className="hidden items-center gap-1 sm:flex" aria-label="Principal">
           <Button variant="ghost" size="lg" nativeButton={false} render={<Link href="/" />}>
-            Home
+            Inicio
           </Button>
           <Button variant="ghost" size="lg" nativeButton={false} render={<Link href="/standings" />}>
-            Standings
+            Clasificación
           </Button>
           <Button variant="ghost" size="lg" nativeButton={false} render={<Link href="/submit" />}>
-            Submit
+            Enviar
           </Button>
         </nav>
 
         <Button size="lg" nativeButton={false} render={<Link href="/submit" />}>
-          Report a Result
+          Reportar resultado
         </Button>
       </div>
     </header>

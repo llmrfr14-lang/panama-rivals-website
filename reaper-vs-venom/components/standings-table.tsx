@@ -9,11 +9,11 @@ export function StandingsTable() {
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
               <th className="px-4 py-3 font-medium">#</th>
-              <th className="px-4 py-3 font-medium">Team</th>
-              <th className="px-3 py-3 text-center font-medium">P</th>
-              <th className="px-3 py-3 text-center font-medium">W</th>
-              <th className="px-3 py-3 text-center font-medium">L</th>
-              <th className="hidden px-3 py-3 text-center font-medium sm:table-cell">GD</th>
+              <th className="px-4 py-3 font-medium">Equipo</th>
+              <th className="px-3 py-3 text-center font-medium">PJ</th>
+              <th className="px-3 py-3 text-center font-medium">V</th>
+              <th className="px-3 py-3 text-center font-medium">D</th>
+              <th className="hidden px-3 py-3 text-center font-medium sm:table-cell">DG</th>
               <th className="px-4 py-3 text-right font-medium">Pts</th>
             </tr>
           </thead>

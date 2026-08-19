@@ -14,9 +14,9 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: 'PanamaRivals — Rocket League Match Results',
+  title: 'PanamaRivals — Resultados de Rocket League',
   description:
-    'The official hub for the PanamaRivals Rocket League league. Follow standings and submit your match results with an endgame screenshot or a replay file.',
+    'El centro oficial de la liga PanamaRivals de Rocket League. Consulta la clasificación y envía los resultados de tus partidos con una captura final o un archivo de repetición.',
   generator: 'v0.app',
 }
 
@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="es" className={`dark ${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="bg-background font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

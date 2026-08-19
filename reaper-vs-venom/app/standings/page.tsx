@@ -8,27 +8,27 @@ export default function StandingsPage() {
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="mb-8">
-          <h1 className="font-display text-4xl font-bold tracking-tight">Season 4 Standings</h1>
+          <h1 className="font-display text-4xl font-bold tracking-tight">Clasificación de la temporada 4</h1>
           <p className="mt-2 text-muted-foreground">
-            Win = 3 points. Updated as admins verify submitted results.
+            Victoria = 3 puntos. Se actualiza a medida que los administradores verifican los resultados enviados.
           </p>
         </div>
 
         <div className="grid gap-10 lg:grid-cols-[1.5fr_1fr]">
           <section className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold tracking-tight">League Table</h2>
+            <h2 className="font-display text-xl font-bold tracking-tight">Tabla de la liga</h2>
             <StandingsTable />
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-              <span>P — Played</span>
-              <span>W — Wins</span>
-              <span>L — Losses</span>
-              <span>GD — Goal Difference</span>
-              <span>Pts — Points</span>
+              <span>PJ — Partidos jugados</span>
+              <span>V — Victorias</span>
+              <span>D — Derrotas</span>
+              <span>DG — Diferencia de goles</span>
+              <span>Pts — Puntos</span>
             </div>
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold tracking-tight">Recent Results</h2>
+            <h2 className="font-display text-xl font-bold tracking-tight">Resultados recientes</h2>
             <RecentResults />
           </section>
         </div>

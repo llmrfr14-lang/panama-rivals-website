@@ -1,7 +1,15 @@
 import { cn } from '@/lib/utils'
-import { getTeam, standings } from '@/lib/data'
+import type { StandingRow, Team } from '@/lib/data'
 
-export function StandingsTable() {
+export function StandingsTable({
+  teams,
+  standings,
+}: {
+  teams: Team[]
+  standings: StandingRow[]
+}) {
+  const getTeam = (id: string) => teams.find((team) => team.id === id)
+
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="overflow-x-auto">

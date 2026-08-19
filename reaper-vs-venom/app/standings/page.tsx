@@ -1,8 +1,13 @@
 import { SiteHeader } from '@/components/site-header'
 import { StandingsTable } from '@/components/standings-table'
 import { RecentResults } from '@/components/recent-results'
+import { getSiteData } from '@/lib/site-data'
 
-export default function StandingsPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function StandingsPage() {
+  const { teams, standings, recentResults } = await getSiteData()
+
   return (
     <div className="min-h-screen">
       <SiteHeader />
@@ -17,7 +22,7 @@ export default function StandingsPage() {
         <div className="grid gap-10 lg:grid-cols-[1.5fr_1fr]">
           <section className="flex flex-col gap-4">
             <h2 className="font-display text-xl font-bold tracking-tight">Tabla de la liga</h2>
-            <StandingsTable />
+            <StandingsTable teams={teams} standings={standings} />
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
               <span>PJ — Partidos jugados</span>
               <span>V — Victorias</span>
@@ -29,7 +34,7 @@ export default function StandingsPage() {
 
           <section className="flex flex-col gap-4">
             <h2 className="font-display text-xl font-bold tracking-tight">Resultados recientes</h2>
-            <RecentResults />
+            <RecentResults teams={teams} results={recentResults} />
           </section>
         </div>
       </main>

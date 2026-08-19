@@ -1,7 +1,10 @@
 import { SiteHeader } from '@/components/site-header'
 import { SubmitWizard } from '@/components/submit-wizard'
+import { isSupabaseConfigured } from '@/lib/supabase-admin'
 
 export default function SubmitPage() {
+  const backendReady = isSupabaseConfigured()
+
   return (
     <div className="min-h-screen">
       <SiteHeader />
@@ -16,7 +19,7 @@ export default function SubmitPage() {
             los reportes antes de que aparezcan en la clasificación.
           </p>
         </div>
-        <SubmitWizard />
+        <SubmitWizard backendReady={backendReady} />
       </main>
     </div>
   )

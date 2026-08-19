@@ -1,11 +1,19 @@
-import { cn } from '@/lib/utils'
-import { getTeam, recentResults } from '@/lib/data'
 import { CircleCheck, Clock } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import type { MatchResult, Team } from '@/lib/data'
 
-export function RecentResults() {
+export function RecentResults({
+  teams,
+  results,
+}: {
+  teams: Team[]
+  results: MatchResult[]
+}) {
+  const getTeam = (id: string) => teams.find((team) => team.id === id)
+
   return (
     <div className="flex flex-col gap-3">
-      {recentResults.map((match) => {
+      {results.map((match) => {
         const home = getTeam(match.homeTeamId)
         const away = getTeam(match.awayTeamId)
         const homeWon = match.homeScore > match.awayScore

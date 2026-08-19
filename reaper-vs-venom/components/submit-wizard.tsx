@@ -17,9 +17,11 @@ import {
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-type UploadedImage = { id: string; name: string; url: string; size: number }
-type UploadedReplay = { id: string; name: string; size: number }
+type UploadedImage = { id: string; name: string; url: string; size: number; file: File }
+type UploadedReplay = { id: string; name: string; size: number; file: File }
 type ProofMethod = 'image' | 'replay' | null
+
+type UploadTarget = { clientId: string; proofId: string; signedUrl: string }
 
 const steps = [
   { id: 1, label: 'Partido', hint: 'Equipos y marcador' },
@@ -33,12 +35,15 @@ function formatSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-export function SubmitWizard() {
+export function SubmitWizard({ backendReady }: { backendReady: boolean }) {
   const [step, setStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const [homeTeam, setHomeTeam] = useState('')
   const [awayTeam, setAwayTeam] = useState('')
+  const [submittedBy, setSubmittedBy] = useState('')
   const [bestOf, setBestOf] = useState('5')
   const [matchDate, setMatchDate] = useState('')
   const [homeScore, setHomeScore] = useState('')
@@ -61,6 +66,7 @@ export function SubmitWizard() {
         name: f.name,
         url: URL.createObjectURL(f),
         size: f.size,
+        file: f,
       }))
     setImages((prev) => [...prev, ...next])
   }
@@ -73,6 +79,7 @@ export function SubmitWizard() {
         id: `${f.name}-${f.lastModified}-${Math.random().toString(36).slice(2, 7)}`,
         name: f.name,
         size: f.size,
+        file: f,
       }))
     setReplays((prev) => [...prev, ...next])
   }
@@ -104,9 +111,12 @@ export function SubmitWizard() {
 
   function resetForm() {
     setSubmitted(false)
+    setSubmitting(false)
+    setSubmitError('')
     setStep(1)
     setHomeTeam('')
     setAwayTeam('')
+    setSubmittedBy('')
     setHomeScore('')
     setAwayScore('')
     setProofMethod(null)
@@ -124,16 +134,91 @@ export function SubmitWizard() {
     (proofMethod === 'image' && images.length > 0) ||
     (proofMethod === 'replay' && replays.length > 0)
 
+  const homeScoreNumber = Number(homeScore)
+  const awayScoreNumber = Number(awayScore)
+  const requiredWins = Math.ceil(Number(bestOf) / 2)
+  const scoresFilled = homeScore !== '' && awayScore !== ''
+  const scoreValid =
+    scoresFilled &&
+    homeScoreNumber !== awayScoreNumber &&
+    Math.max(homeScoreNumber, awayScoreNumber) === requiredWins
+
   const canContinue: Record<number, boolean> = {
     1: Boolean(
       homeTeam.trim() &&
       awayTeam.trim() &&
       !teamsMatch &&
-      homeScore !== '' &&
-      awayScore !== '',
+      scoreValid,
     ),
     2: proofReady,
-    3: true,
+    3: backendReady,
+  }
+
+  async function uploadProofFile(upload: UploadTarget, file: UploadedImage | UploadedReplay) {
+    const body = new FormData()
+    body.append('cacheControl', '3600')
+    body.append('', file.file)
+
+    const response = await fetch(upload.signedUrl, {
+      method: 'PUT',
+      headers: { 'x-upsert': 'false' },
+      body,
+    })
+    if (!response.ok) throw new Error(`No se pudo subir ${file.name}.`)
+  }
+
+  async function handleSubmit() {
+    if (!proofMethod || !proofReady || submitting) return
+
+    setSubmitting(true)
+    setSubmitError('')
+    try {
+      const proofFiles = proofMethod === 'image' ? images : replays
+      const response = await fetch('/api/submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          homeTeam: homeTeam.trim(),
+          awayTeam: awayTeam.trim(),
+          submittedBy: submittedBy.trim(),
+          bestOf: Number(bestOf),
+          matchDate,
+          homeScore: homeScoreNumber,
+          awayScore: awayScoreNumber,
+          proofType: proofMethod,
+          files: proofFiles.map((file) => ({
+            clientId: file.id,
+            name: file.name,
+            size: file.size,
+            type: file.file.type,
+          })),
+        }),
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.error || 'No se pudo guardar el reporte.')
+
+      for (const upload of result.uploads as UploadTarget[]) {
+        const file = proofFiles.find((item) => item.id === upload.clientId)
+        if (!file) throw new Error('No se encontró uno de los archivos seleccionados.')
+        await uploadProofFile(upload, file)
+      }
+
+      const completeResponse = await fetch('/api/submissions/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissionId: result.submissionId }),
+      })
+      const completeResult = await completeResponse.json().catch(() => ({}))
+      if (!completeResponse.ok) {
+        throw new Error(completeResult.error || 'No se pudo confirmar la subida de archivos.')
+      }
+
+      setSubmitted(true)
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'No se pudo enviar el reporte.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (submitted) {
@@ -205,6 +290,12 @@ export function SubmitWizard() {
       </ol>
 
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+        {!backendReady && (
+          <div className="mb-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm text-accent">
+            El guardado de reportes todavía no está configurado. Podrás revisar el formulario,
+            pero el envío estará disponible cuando se conecte la base de datos.
+          </div>
+        )}
         {/* Step 1: Match — teams + score together */}
         {step === 1 && (
           <div className="flex flex-col gap-6">
@@ -220,6 +311,13 @@ export function SubmitWizard() {
                 <TeamInput value={awayTeam} onChange={setAwayTeam} placeholder="Nombre del equipo visitante" />
               </Field>
             </div>
+            <Field label="Tu nombre o usuario (opcional)">
+              <TeamInput
+                value={submittedBy}
+                onChange={setSubmittedBy}
+                placeholder="Nombre que verán los administradores"
+              />
+            </Field>
             {teamsMatch && (
               <p className="text-sm text-destructive">El equipo local y el visitante deben ser diferentes.</p>
             )}
@@ -252,6 +350,11 @@ export function SubmitWizard() {
                 <span className="pt-6 font-display text-2xl font-bold text-muted-foreground">–</span>
                 <ScoreInput label={teamName(awayTeam)} value={awayScore} onChange={setAwayScore} />
               </div>
+              {scoresFilled && !scoreValid && (
+                <p className="mt-4 text-sm text-destructive">
+                  No puede haber empate. El equipo ganador debe tener {requiredWins} victorias.
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -431,6 +534,7 @@ export function SubmitWizard() {
               </div>
               <ReviewRow label="Serie" value={`Mejor de ${bestOf}`} />
               <ReviewRow label="Fecha" value={matchDate || 'Sin fecha'} />
+              <ReviewRow label="Enviado por" value={submittedBy.trim() || 'Jugador de PanamaRivals'} />
               <ReviewRow
                 label="Prueba"
                 value={
@@ -470,25 +574,36 @@ export function SubmitWizard() {
         )}
 
         {/* Nav */}
-        <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={() => setStep((s) => Math.max(1, s - 1))}
-            disabled={step === 1}
-          >
-            <ChevronLeft className="size-4" /> Atrás
-          </Button>
+        <div className="mt-8 flex flex-col gap-4 border-t border-border pt-6">
+          {submitError && <p className="text-sm text-destructive">{submitError}</p>}
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => setStep((s) => Math.max(1, s - 1))}
+              disabled={step === 1 || submitting}
+            >
+              <ChevronLeft className="size-4" /> Atrás
+            </Button>
 
-          {step < 3 ? (
-            <Button size="lg" onClick={() => setStep((s) => s + 1)} disabled={!canContinue[step]}>
-              Continuar <ChevronRight className="size-4" />
-            </Button>
-          ) : (
-            <Button size="lg" onClick={() => setSubmitted(true)}>
-              <Trophy className="size-4" /> Enviar resultado
-            </Button>
-          )}
+            {step < 3 ? (
+              <Button
+                size="lg"
+                onClick={() => setStep((s) => s + 1)}
+                disabled={!canContinue[step] || submitting}
+              >
+                Continuar <ChevronRight className="size-4" />
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                onClick={handleSubmit}
+                disabled={!backendReady || submitting}
+              >
+                <Trophy className="size-4" /> {submitting ? 'Enviando…' : 'Enviar resultado'}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { SiteHeader } from '@/components/site-header'
 import { StandingsTable } from '@/components/standings-table'
 import { RecentResults } from '@/components/recent-results'
+import { getSiteData } from '@/lib/site-data'
 
 const steps = [
   {
@@ -24,7 +25,11 @@ const steps = [
   },
 ]
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic'
+
+export default async function HomePage() {
+  const { teams, standings, recentResults } = await getSiteData()
+
   return (
     <div className="min-h-screen">
       <SiteHeader />
@@ -105,11 +110,11 @@ export default function HomePage() {
                 Tabla completa
               </Button>
             </div>
-            <StandingsTable />
+            <StandingsTable teams={teams} standings={standings} />
           </div>
           <div className="flex flex-col gap-4">
             <h2 className="font-display text-2xl font-bold tracking-tight">Resultados recientes</h2>
-            <RecentResults />
+            <RecentResults teams={teams} results={recentResults} />
           </div>
         </div>
       </section>

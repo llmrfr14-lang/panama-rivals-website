@@ -15,7 +15,6 @@ import {
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { teams } from '@/lib/data'
 import { Button } from '@/components/ui/button'
 
 type UploadedImage = { id: string; name: string; url: string; size: number }
@@ -116,14 +115,23 @@ export function SubmitWizard() {
     setReplays([])
   }
 
-  const teamName = (id: string) => teams.find((t) => t.id === id)?.name ?? '—'
+  const teamName = (name: string) => name || '—'
+  const teamsMatch =
+    homeTeam.trim() && awayTeam.trim() &&
+    homeTeam.trim().toLowerCase() === awayTeam.trim().toLowerCase()
 
   const proofReady =
     (proofMethod === 'image' && images.length > 0) ||
     (proofMethod === 'replay' && replays.length > 0)
 
   const canContinue: Record<number, boolean> = {
-    1: Boolean(homeTeam && awayTeam && homeTeam !== awayTeam && homeScore !== '' && awayScore !== ''),
+    1: Boolean(
+      homeTeam.trim() &&
+      awayTeam.trim() &&
+      !teamsMatch &&
+      homeScore !== '' &&
+      awayScore !== '',
+    ),
     2: proofReady,
     3: true,
   }
@@ -202,17 +210,17 @@ export function SubmitWizard() {
           <div className="flex flex-col gap-6">
             <StepHeading
               title="Which match are you reporting?"
-              desc="Pick both teams, the series format, and the final score."
+              desc="Enter both team names, the series format, and the final score."
             />
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Home team">
-                <TeamSelect value={homeTeam} onChange={setHomeTeam} exclude={awayTeam} />
+                <TeamInput value={homeTeam} onChange={setHomeTeam} placeholder="Home team name" />
               </Field>
               <Field label="Away team">
-                <TeamSelect value={awayTeam} onChange={setAwayTeam} exclude={homeTeam} />
+                <TeamInput value={awayTeam} onChange={setAwayTeam} placeholder="Away team name" />
               </Field>
             </div>
-            {homeTeam && awayTeam && homeTeam === awayTeam && (
+            {teamsMatch && (
               <p className="text-sm text-destructive">Home and away teams must be different.</p>
             )}
             <div className="grid gap-4 sm:grid-cols-2">
@@ -551,30 +559,22 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-function TeamSelect({
+function TeamInput({
   value,
   onChange,
-  exclude,
+  placeholder,
 }: {
   value: string
   onChange: (v: string) => void
-  exclude: string
+  placeholder: string
 }) {
   return (
-    <select
+    <input
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
       className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40"
-    >
-      <option value="">Select a team</option>
-      {teams
-        .filter((t) => t.id !== exclude)
-        .map((t) => (
-          <option key={t.id} value={t.id}>
-            {t.name}
-          </option>
-        ))}
-    </select>
+    />
   )
 }
 

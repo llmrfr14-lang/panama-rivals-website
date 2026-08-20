@@ -15,7 +15,7 @@ export default async function StandingsPage() {
         <div className="mb-8">
           <h1 className="font-display text-4xl font-bold tracking-tight">Clasificación de la temporada 4</h1>
           <p className="mt-2 text-muted-foreground">
-            Victoria = 3 puntos. Se actualiza a medida que los administradores verifican los resultados enviados.
+            Victoria = 3 puntos · Derrota = −1 punto. Se actualiza a medida que los administradores verifican los resultados enviados.
           </p>
         </div>
 

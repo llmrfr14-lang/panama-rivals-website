@@ -117,10 +117,12 @@ export async function getSiteData() {
         homeRow.wins += 1
         homeRow.points += 3
         awayRow.losses += 1
+        awayRow.points -= 1
       } else {
         awayRow.wins += 1
         awayRow.points += 3
         homeRow.losses += 1
+        homeRow.points -= 1
       }
 
       rows.set(homeTeam.id, homeRow)

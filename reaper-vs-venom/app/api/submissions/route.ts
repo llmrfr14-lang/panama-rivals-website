@@ -105,10 +105,7 @@ export async function POST(request: Request) {
     status: 'uploading',
   })
 
-  if (submissionError) {
-    console.error('Submission insert error:', JSON.stringify(submissionError))
-    return fail('No se pudo guardar el reporte.', 500)
-  }
+  if (submissionError) return fail('No se pudo guardar el reporte.', 500)
 
   try {
     for (const file of files) {

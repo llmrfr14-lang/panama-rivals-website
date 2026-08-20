@@ -41,7 +41,7 @@ export default async function HomePage() {
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-24 sm:px-6 sm:py-28 lg:grid-cols-[1fr_auto]">
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
-              <span className="size-1.5 rounded-full bg-primary" /> Temporada 4 · En vivo
+              <span className="size-1.5 rounded-full bg-primary" /> Temporada 2 · En vivo
             </span>
             <h1 className="mt-5 font-display text-5xl font-bold tracking-tight text-balance sm:text-6xl">
               Reporta tus resultados de PanamaRivals en{' '}
@@ -122,7 +122,7 @@ export default async function HomePage() {
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:px-6">
           <p>Liga PanamaRivals de Rocket League</p>
-          <p>Creado para la comunidad · Temporada 4</p>
+          <p>Creado para la comunidad · Temporada 2</p>
         </div>
       </footer>
     </div>
